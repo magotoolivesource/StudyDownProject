@@ -12,10 +12,14 @@ namespace Du3Project
         [SerializeField, ShowOnly]
         Action<BaseActor> m_CallFN = null;
 
+        public float SphereRadius = 0f;
+
         public void InitCollisionDetating( BaseActor  p_linkactor,  Action<BaseActor> p_callfn )
         {
             m_LinkActor = p_linkactor;
             m_CallFN = p_callfn;
+
+            SphereRadius = GetComponent<SphereCollider>().radius;
         }
 
         private void OnTriggerEnter(Collider p_other)

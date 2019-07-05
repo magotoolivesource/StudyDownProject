@@ -8,6 +8,10 @@ namespace Du3Project
 {
     public class BaseActor : MonoBehaviour
     {
+
+        public int ActorTableID = -1;
+
+
         [SerializeField]
         protected ActorData m_ActorData = new ActorData();
         public ActorData ActorDataCom
@@ -83,6 +87,8 @@ namespace Du3Project
 
             if (m_TargetActor.ISDie )
             {
+                UpdateSerchingDieActor();
+
                 return;
             }
 
@@ -97,18 +103,21 @@ namespace Du3Project
 
             if( isattack )
             {
-                //m_TargetActor.SetDamage( this, this.ActorAttackVal );
 
-                int randindex = Random.Range(0, 2);
+
+                //m_TargetActor.SetDamage( this, this.ActorAttackVal );
+                int randindex = Random.Range(0, 1);
                 E_RandomAttackType val = (E_RandomAttackType)Random.Range(0, (int)E_RandomAttackType.Max);
                 m_LinkAnimator.SetTrigger( val.ToString() );
 
                 Debug.LogFormat("공격 : {0}, {1}, {2} ", val, this.name, m_TargetActor.name);
-                
+
+
 
             }
-
         }
+
+
 
         public void SetDamage( BaseActor p_attacker, float p_attackval )
         {
@@ -124,7 +133,7 @@ namespace Du3Project
             if(m_ActorData.HP <= 0)
             {
                 m_ActorData.HP = 0;
-
+                this.gameObject.SetActive(false);
 
             }
 
@@ -132,13 +141,19 @@ namespace Du3Project
         }
 
 
+        [SerializeField, ShowOnly]
         protected BaseActor m_TargetActor = null;
         void AttackCollistionEnter(BaseActor p_actor)
         {
             Debug.LogFormat("공격범위 녀석 : {0}, {1}", this.name
                 , p_actor.name);
 
-            m_TargetActor = p_actor;
+            if(m_TargetActor == null)
+            {
+                m_TargetActor = p_actor;
+            }
+
+
         }
 
         void SerchingCollsionEnter(BaseActor p_actor)
@@ -164,15 +179,39 @@ namespace Du3Project
             Debug.LogFormat("공격 애네미이션 콜 : {0}", p_value);
         }
 
+        //protected Dictionary<E_AniCallType, Action<E_AniCallType>> m_AnimationCallFN = new Dictionary<E_AniCallType, Action<E_AniCallType>>();
+        protected Action<E_AniCallType>[] m_AnimationCallFNArray = new Action<E_AniCallType>[(int)E_AniCallType.Max];
+
         protected void ActorAttackAniEventCallFN( E_AniCallType p_value)
         {
             Debug.LogFormat("애네미이션 콜 : {0}", p_value);
+            if( m_AnimationCallFNArray[(int)p_value] != null )
+            {
+                m_AnimationCallFNArray[(int)p_value]( p_value );
+            }
+            
         }
+
 
 
 
         private void Awake()
         {
+            m_ActorData = ActorTableData.GetI.GetActorTableData(ActorTableID);
+
+
+
+            this.gameObject.layer = CalcManager.GetCampTypeTOLayerIndex(this);
+
+
+            //m_AnimationCallFN.Clear();
+            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
+            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
+            m_AnimationCallFNArray = new Action<E_AniCallType>[(int)E_AniCallType.Max];
+            m_AnimationCallFNArray[(int)E_AniCallType.Attack01] = Attack1;
+            m_AnimationCallFNArray[(int)E_AniCallType.Attack02] = Attack2;
+
+
             m_LinkAnimator = GetComponentInChildren<Animator>();
 
             AttackRange.InitCollisionDetating(this, AttackCollistionEnter);
@@ -194,6 +233,112 @@ namespace Du3Project
             UdateAttack();
 
         }
-	}
+
+
+
+        public List<AttackData> AttackDataArray = new List<AttackData>();
+        public void Attack1(E_AniCallType p_calltype)
+        {
+            AttackData attackdata = AttackDataArray[0];
+
+            if( attackdata.AttackRangeType == E_AttackRangeType.Meel )
+            {
+                if(attackdata.AttackMutiType == E_AttackMultiType.Single )
+                {
+                    float attackval = m_ActorData.Attack + attackdata.AddAttackVal;
+                    m_TargetActor.SetDamage(this, attackval);
+                }
+                else if(attackdata.AttackMutiType == E_AttackMultiType.Multi)
+                {
+                    float attackval = m_ActorData.Attack + attackdata.AddAttackVal;
+                    m_TargetActor.SetDamage(this, attackval);
+
+
+                    int layermaskval = CalcManager.GetActorCampTypeTOLayerMask(m_TargetActor);
+                    Collider[] colliderarray = Physics.OverlapSphere(m_TargetActor.transform.position
+                        , attackdata.MultiAttackRangeVal
+                        , layermaskval );
+
+                    attackval = attackval * attackdata.MultiAttackRangeDiv;
+                    foreach (var item in colliderarray)
+                    {
+                        BaseActor tempactor = item.GetComponent<BaseActor>();
+                        if(tempactor )
+                        {
+                            tempactor.SetDamage(this, attackval);
+                        }
+                    }
+
+
+                }
+            }
+            else if(attackdata.AttackRangeType == E_AttackRangeType.Range)
+            { 
+                // 피사체 던지기
+
+            }
+
+
+            UpdateSerchingDieActor();
+
+        }
+
+        void UpdateSerchingDieActor()
+        {
+            if (m_TargetActor.ISDie)
+            {
+                int layermaskval = CalcManager.GetActorCampTypeTOLayerMask(m_TargetActor);
+                Collider[] colliderarray = Physics.OverlapSphere(this.transform.position
+                    , AttackRange.SphereRadius + 10f
+                    , layermaskval);
+
+
+                m_TargetActor = null;
+                float minlength = float.MaxValue;
+                foreach (var item in colliderarray)
+                {
+                    BaseActor tempactor = item.GetComponent<BaseActor>();
+
+                    if (tempactor != null)
+                    {
+                        float val = (tempactor.transform.position - this.transform.position).magnitude;
+                        if (minlength > val)
+                        {
+                            m_TargetActor = tempactor;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        public void Attack2(E_AniCallType p_calltype)
+        {
+
+        }
+
+#if UNITY_EDITOR
+
+        public Color LineColor = Color.red;
+        private void OnDrawGizmos()
+        {
+            if(m_TargetActor == null)
+                return;
+
+            Color tempcolor = Gizmos.color;
+
+            Gizmos.color = LineColor;
+
+            Vector3 thispos = this.transform.position;
+            thispos.y = 0.5f;
+            Gizmos.DrawLine(thispos, m_TargetActor.transform.position);
+
+            Gizmos.color = tempcolor;
+        }
+
+#endif
+
+
+    }
 
 }

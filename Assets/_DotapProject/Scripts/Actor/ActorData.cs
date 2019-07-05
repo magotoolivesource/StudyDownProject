@@ -7,6 +7,15 @@ namespace Du3Project
     [System.Serializable]
 	public class ActorData
 	{
+        public int ID = -1;
+        // 액터 이름등 고유값
+        public string Name = "";
+        public string FullName = "";
+        public string Descript = "";
+        public string ActorImgae = "";
+
+
+        // 액터 속성값
         public int HP = 100;
         public float Attack = 1f;
         public float Def = 1f;
