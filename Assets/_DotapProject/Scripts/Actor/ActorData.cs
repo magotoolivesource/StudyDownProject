@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Du3Project
 {
     [System.Serializable]
-	public class ActorData
+    [CreateAssetMenu(fileName = "ActorData", menuName = "_Dotap/CreateActorData", order = 1)]
+    public class ActorData : ScriptableObject
 	{
         public int ID = -1;
         // 액터 이름등 고유값
@@ -23,6 +24,9 @@ namespace Du3Project
         public float MoveSpeed = 1f;
 
         public float AttackSpeed = 1f;
+
+
+
 
 
     }

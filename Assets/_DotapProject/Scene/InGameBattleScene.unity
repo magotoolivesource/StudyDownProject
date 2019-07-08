@@ -201,17 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorTableID: 0
-  m_ActorData:
-    ID: -1
-    Name: 
-    FullName: 
-    Descript: 
-    ActorImgae: 
-    HP: 100
-    Attack: 1
-    Def: 1
-    MoveSpeed: 1
-    AttackSpeed: 1
+  m_ActorData: {fileID: 11400000, guid: 43a5191c1ae6ec74a80fb6575d5b9ff5, type: 2}
   MyCamp: 0
   m_TargetActor: {fileID: 0}
   AttackRange: {fileID: 147999240}
@@ -391,17 +381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorTableID: 0
-  m_ActorData:
-    ID: -1
-    Name: 
-    FullName: 
-    Descript: 
-    ActorImgae: 
-    HP: 100
-    Attack: 1
-    Def: 1
-    MoveSpeed: 1
-    AttackSpeed: 1
+  m_ActorData: {fileID: 0}
   MyCamp: 0
   m_TargetActor: {fileID: 0}
   AttackRange: {fileID: 428658900}
@@ -673,17 +653,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorTableID: 1
-  m_ActorData:
-    ID: -1
-    Name: 
-    FullName: 
-    Descript: 
-    ActorImgae: 
-    HP: 5
-    Attack: 1
-    Def: 1
-    MoveSpeed: 1
-    AttackSpeed: 1
+  m_ActorData: {fileID: 0}
   MyCamp: 1
   m_TargetActor: {fileID: 0}
   AttackRange: {fileID: 1861041634}
@@ -755,6 +725,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb7392cda79bbe646be77cc34979316b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TempActorTableData:
+    ActorTableAllDataList:
+    - {fileID: 11400000, guid: 43a5191c1ae6ec74a80fb6575d5b9ff5, type: 2}
+    - {fileID: 11400000, guid: d99c4d1e7b6a15c4c8db029a42bedf32, type: 2}
 --- !u!4 &788517624
 Transform:
   m_ObjectHideFlags: 0
@@ -1160,17 +1134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActorTableID: 1
-  m_ActorData:
-    ID: -1
-    Name: 
-    FullName: 
-    Descript: 
-    ActorImgae: 
-    HP: 100
-    Attack: 1
-    Def: 1
-    MoveSpeed: 1
-    AttackSpeed: 1
+  m_ActorData: {fileID: 0}
   MyCamp: 1
   m_TargetActor: {fileID: 0}
   AttackRange: {fileID: 1376157020}
