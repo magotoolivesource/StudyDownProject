@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ActorData01
   m_EditorClassIdentifier: 
   ID: 0
-  Name: "\uD14C\uC2A4\uD2B81"
-  FullName: 
+  Name: "\uC120\uC7A5"
+  FullName: "\uC120\uC7A5\uC784"
   Descript: 
   ActorImgae: 
   HP: 100
@@ -22,3 +22,5 @@ MonoBehaviour:
   Def: 1
   MoveSpeed: 1
   AttackSpeed: 1
+  ActorSpriteImage: {fileID: 4683320492486914338, guid: ca8c3f302ff5faa4e8a88be67ec2e7a6,
+    type: 3}

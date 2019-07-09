@@ -10,10 +10,54 @@ namespace Du3Project
 	{
         public List<ActorData> ActorTableAllDataList = new List<ActorData>();
 
-        public ActorData GetActorTableData( int p_idindex)
+        protected Dictionary<int, ActorData> m_ActorTableAllDataMap = new Dictionary<int, ActorData>();
+        public System.Collections.Generic.Dictionary<int, Du3Project.ActorData> ActorTableAllDataMap
         {
-            return ActorTableAllDataList.Find( (data) => data.ID == p_idindex );
+            get { return m_ActorTableAllDataMap; }
+            protected set { m_ActorTableAllDataMap = value; }
         }
+
+        protected Dictionary<string, ActorData> m_ActorTableAllDataNameMap = new Dictionary<string, ActorData>();
+        public System.Collections.Generic.Dictionary<string, Du3Project.ActorData> ActorTableAllDataNameMap
+        {
+            get { return m_ActorTableAllDataNameMap; }
+            protected set { m_ActorTableAllDataNameMap = value; }
+        }
+
+        public ActorData GetActorTableData(string p_name)
+        {
+            if (!m_ActorTableAllDataNameMap.ContainsKey(p_name))
+            {
+                return null;
+            }
+
+            ActorData outdata = new ActorData(  m_ActorTableAllDataNameMap[p_name] );
+            return outdata;
+        }
+
+        public bool ISGetActortableData(int p_idindex)
+        {
+            if (m_ActorTableAllDataMap.ContainsKey(p_idindex))
+                return true;
+
+            return false;
+        }
+
+        public ActorData GetActorTableData(int p_idindex)
+        {
+            if( !m_ActorTableAllDataMap.ContainsKey(p_idindex))
+            {
+                return null;
+            }
+
+            ActorData outdata = new ActorData(m_ActorTableAllDataMap[p_idindex]);
+            return outdata;
+        }
+
+        //public ActorData GetActorTableData( int p_idindex)
+        //{
+        //    return ActorTableAllDataList.Find( (data) => data.ID == p_idindex );
+        //}
 
 
        
@@ -37,6 +81,8 @@ namespace Du3Project
 
 
             ActorTableAllDataList.Clear();
+            m_ActorTableAllDataMap.Clear();
+            m_ActorTableAllDataNameMap.Clear();
 
 
             ActorData tempactordata = null;
@@ -48,13 +94,34 @@ namespace Du3Project
                 if (File.Extension.ToLower().CompareTo(".asset") == 0)
                 {
                     tempstr = Path.GetFileNameWithoutExtension(File.Name);
-                    Debug.LogFormat("Load Asset File : {0}\n {1}", File.Name
-                        , File.FullName
-                        , tempstr
-                        );
+                    //Debug.LogFormat("Load Asset File : {0}\n {1}", File.Name
+                    //    , File.FullName
+                    //    , tempstr
+                    //    );
 
                     tempactordata = Resources.Load<ActorData>(tempstr);
                     ActorTableAllDataList.Add(tempactordata);
+
+
+                    if( !m_ActorTableAllDataMap.ContainsKey(tempactordata.ID) )
+                    {
+                        m_ActorTableAllDataMap.Add(tempactordata.ID, tempactordata);
+                    }
+                    else
+                    {
+                        Debug.LogErrorFormat("중복되는 인덱스가 있음 : {0}, {1}", File.FullName, tempactordata.ID);
+                    }
+
+                    if( !m_ActorTableAllDataNameMap.ContainsKey(tempactordata.Name) )
+                    {
+                        m_ActorTableAllDataNameMap.Add(tempactordata.Name, tempactordata);
+                    }
+                    else
+                    {
+                        Debug.LogErrorFormat("중복되는 이름이 있음 : {0}, {1}", File.FullName, tempactordata.ID);
+                    }
+
+
                 }
             }
 

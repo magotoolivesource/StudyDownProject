@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7000b964566f43439e046a8d356f95d, type: 3}
   m_Name: ActorData04
   m_EditorClassIdentifier: 
-  ID: 1
-  Name: "\uD14C\uC2A4\uD2B82\uBC88"
+  ID: 3
+  ActorDataNameEnum: 3
+  Name: "\uBD04\uBC84"
   FullName: 
   Descript: 
   ActorImgae: 
@@ -22,3 +23,5 @@ MonoBehaviour:
   Def: 1
   MoveSpeed: 1
   AttackSpeed: 1
+  ActorSpriteImage: {fileID: -8916726480104510640, guid: ca8c3f302ff5faa4e8a88be67ec2e7a6,
+    type: 3}

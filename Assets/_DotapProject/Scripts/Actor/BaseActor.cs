@@ -2,25 +2,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Du3Project
 {
     public class BaseActor : MonoBehaviour
     {
-
         public int ActorTableID = -1;
+        public E_Camp MyCamp = E_Camp.Max;
 
 
-        [SerializeField]
-        protected ActorData m_ActorData = new ActorData();
+
+
+        [SerializeField, ShowOnly]
+        protected ActorData m_ActorData = null;// new ActorData();
         public ActorData ActorDataCom
         {
             get { return m_ActorData; }
             protected set { m_ActorData = value;}
         }
 
-        public E_Camp MyCamp = E_Camp.Max;
+        
         
         public bool ISDie
         {
@@ -36,7 +39,36 @@ namespace Du3Project
             }
         }
 
+        bool m_ISInit = false;
+        public void InitSettingData( int p_id, E_Camp p_camp )
+        {
+            ActorTableID = p_id;
+            MyCamp = p_camp;
 
+
+            m_ActorData = ActorTableData.GetI.GetActorTableData(ActorTableID);
+            this.gameObject.layer = CalcManager.GetCampTypeTOLayerIndex(this);
+
+            //m_AnimationCallFN.Clear();
+            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
+            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
+            m_AnimationCallFNArray = new Action<E_AniCallType>[(int)E_AniCallType.Max];
+            m_AnimationCallFNArray[(int)E_AniCallType.Attack01] = Attack1;
+            m_AnimationCallFNArray[(int)E_AniCallType.Attack02] = Attack2;
+
+
+            m_LinkAnimator = GetComponentInChildren<Animator>();
+
+            AttackRange.InitCollisionDetating(this, AttackCollistionEnter);
+            SerchingRange.InitCollisionDetating(this, SerchingCollsionEnter);
+
+            ActorAniEventCom.SetAnimationCallBackFN(ActorAttackEventCallFN, ActorAttackAniEventCallFN);
+
+
+            SetDataSetting();
+
+            m_ISInit = true;
+        }
 
         protected void UpdateMove()
         {
@@ -73,7 +105,8 @@ namespace Du3Project
                 }
             }
 
-            transform.Translate(movespeed, 0f, 0f);
+            //transform.Translate(movespeed, 0f, 0f);
+            transform.position = transform.position + new Vector3(movespeed, 0f, 0f);
         }
 
 
@@ -172,6 +205,8 @@ namespace Du3Project
         [SerializeField, ShowOnly ]
         protected Animator m_LinkAnimator = null;
 
+        public SpriteRenderer m_LinkActorSpirte = null;
+
 
 
         protected void ActorAttackEventCallFN( E_AnimationType p_value )
@@ -194,32 +229,24 @@ namespace Du3Project
 
 
 
+        void SetDataSetting()
+        {
+            m_LinkActorSpirte.sprite = m_ActorData.ActorSpriteImage;
+
+            if(MyCamp == E_Camp.MyCamp)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            else if (MyCamp == E_Camp.EnemyCamp)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+
+        }
 
         private void Awake()
         {
-            m_ActorData = ActorTableData.GetI.GetActorTableData(ActorTableID);
-
-
-
-            this.gameObject.layer = CalcManager.GetCampTypeTOLayerIndex(this);
-
-
-            //m_AnimationCallFN.Clear();
-            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
-            //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
-            m_AnimationCallFNArray = new Action<E_AniCallType>[(int)E_AniCallType.Max];
-            m_AnimationCallFNArray[(int)E_AniCallType.Attack01] = Attack1;
-            m_AnimationCallFNArray[(int)E_AniCallType.Attack02] = Attack2;
-
-
-            m_LinkAnimator = GetComponentInChildren<Animator>();
-
-            AttackRange.InitCollisionDetating(this, AttackCollistionEnter);
-            SerchingRange.InitCollisionDetating(this, SerchingCollsionEnter);
-
-            ActorAniEventCom.SetAnimationCallBackFN(ActorAttackEventCallFN, ActorAttackAniEventCallFN);
-
-
+            
         }
 
         void Start()
@@ -229,6 +256,13 @@ namespace Du3Project
 
 		void Update()
 		{
+            if(!m_ISInit)
+            {
+                return;
+            }
+
+
+
             UpdateMove();
             UdateAttack();
 
