@@ -6,6 +6,67 @@ using UnityEngine;
 namespace Du3Project
 {
     [System.Serializable]
+    public class AttackTableData : SingletonTample<AttackTableData>
+    {
+        public List<AttackData> AttackAllTableDataList = new List<AttackData>();
+        protected Dictionary<int, AttackData> m_AttackAllTableDataDic = new Dictionary<int, AttackData>();
+
+        public AttackData GetAttackDataID(int p_id)
+        {
+            if (m_AttackAllTableDataDic.ContainsKey(p_id))
+            {
+                return m_AttackAllTableDataDic[p_id];
+            }
+
+            return null;
+        }
+
+
+        public void Init()
+        {
+            AttackAllTableDataList.Clear();
+            m_AttackAllTableDataDic.Clear();
+
+
+            AttackData tempattackdata = null;
+            string FolderName = Application.dataPath + "/Resources";
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(FolderName);
+            string tempstr = "";
+            foreach (System.IO.FileInfo File in di.GetFiles())
+            {
+                if (File.Extension.ToLower().CompareTo(".asset") == 0)
+                {
+                    tempstr = Path.GetFileNameWithoutExtension(File.Name);
+
+                    tempattackdata = Resources.Load<AttackData>(tempstr);
+
+                    if(tempattackdata)
+                    {
+                        AttackAllTableDataList.Add(tempattackdata);
+
+
+                        if (!m_AttackAllTableDataDic.ContainsKey(tempattackdata.AttackID))
+                        {
+                            m_AttackAllTableDataDic.Add(tempattackdata.AttackID, tempattackdata);
+                        }
+                        else
+                        {
+                            Debug.LogErrorFormat(" 공격 데이터 중복되는 인덱스가 있음 : {0}, {1}", File.FullName, tempattackdata.AttackID);
+                        }
+
+                    }
+                }
+            }
+
+        }
+
+
+    }
+
+
+
+
+    [System.Serializable]
 	public class ActorTableData : SingletonTample<ActorTableData>
 	{
         public List<ActorData> ActorTableAllDataList = new List<ActorData>();
@@ -100,27 +161,30 @@ namespace Du3Project
                     //    );
 
                     tempactordata = Resources.Load<ActorData>(tempstr);
-                    ActorTableAllDataList.Add(tempactordata);
+
+                    if(tempactordata)
+                    {
+                        ActorTableAllDataList.Add(tempactordata);
 
 
-                    if( !m_ActorTableAllDataMap.ContainsKey(tempactordata.ID) )
-                    {
-                        m_ActorTableAllDataMap.Add(tempactordata.ID, tempactordata);
-                    }
-                    else
-                    {
-                        Debug.LogErrorFormat("중복되는 인덱스가 있음 : {0}, {1}", File.FullName, tempactordata.ID);
-                    }
+                        if (!m_ActorTableAllDataMap.ContainsKey(tempactordata.ID))
+                        {
+                            m_ActorTableAllDataMap.Add(tempactordata.ID, tempactordata);
+                        }
+                        else
+                        {
+                            Debug.LogErrorFormat("중복되는 인덱스가 있음 : {0}, {1}", File.FullName, tempactordata.ID);
+                        }
 
-                    if( !m_ActorTableAllDataNameMap.ContainsKey(tempactordata.Name) )
-                    {
-                        m_ActorTableAllDataNameMap.Add(tempactordata.Name, tempactordata);
+                        if (!m_ActorTableAllDataNameMap.ContainsKey(tempactordata.Name))
+                        {
+                            m_ActorTableAllDataNameMap.Add(tempactordata.Name, tempactordata);
+                        }
+                        else
+                        {
+                            Debug.LogErrorFormat("중복되는 이름이 있음 : {0}, {1}", File.FullName, tempactordata.ID);
+                        }
                     }
-                    else
-                    {
-                        Debug.LogErrorFormat("중복되는 이름이 있음 : {0}, {1}", File.FullName, tempactordata.ID);
-                    }
-
 
                 }
             }

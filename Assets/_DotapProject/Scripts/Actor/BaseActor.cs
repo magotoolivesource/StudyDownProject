@@ -10,6 +10,10 @@ namespace Du3Project
     public class BaseActor : MonoBehaviour
     {
         public int ActorTableID = -1;
+        public List<int> ActorAttackTableIDArray = new List<int>();
+
+
+
         public E_Camp MyCamp = E_Camp.Max;
 
 
@@ -54,7 +58,7 @@ namespace Du3Project
             //m_AnimationCallFN.Add(E_AniCallType.Attack01, Attack1);
             m_AnimationCallFNArray = new Action<E_AniCallType>[(int)E_AniCallType.Max];
             m_AnimationCallFNArray[(int)E_AniCallType.Attack01] = Attack1;
-            m_AnimationCallFNArray[(int)E_AniCallType.Attack02] = Attack2;
+            m_AnimationCallFNArray[(int)E_AniCallType.Attack02] = Attack1;
 
 
             m_LinkAnimator = GetComponentInChildren<Animator>();
@@ -63,6 +67,12 @@ namespace Du3Project
             SerchingRange.InitCollisionDetating(this, SerchingCollsionEnter);
 
             ActorAniEventCom.SetAnimationCallBackFN(ActorAttackEventCallFN, ActorAttackAniEventCallFN);
+
+
+            // 공격 정보 얻기
+            AttackDataArray.Clear();
+            AttackData tempattackdata = AttackTableData.GetI.GetAttackDataID(1000);
+            AttackDataArray.Add(tempattackdata);
 
 
             SetDataSetting();
@@ -98,7 +108,7 @@ namespace Du3Project
                 Vector3 vector = m_TargetActor.transform.position - transform.position;
                 float length = vector.magnitude;
 
-                if( length <= 0.5f)
+                if( length <= 3f)
                 {
                     movespeed = 0f;
                     return;
@@ -307,8 +317,9 @@ namespace Du3Project
                 }
             }
             else if(attackdata.AttackRangeType == E_AttackRangeType.Range)
-            { 
+            {
                 // 피사체 던지기
+                InGameBattleManager.GetI.AddRangeAttackObject( m_TargetActor, this, attackdata );
 
             }
 

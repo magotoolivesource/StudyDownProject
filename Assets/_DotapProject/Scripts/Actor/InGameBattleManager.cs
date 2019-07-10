@@ -12,6 +12,18 @@ namespace Du3Project
         // 프리팹에서 가지고 오기
         public BaseActor CloneActorData = null;
 
+        public RangeAttackObject CloneAttackObject = null;
+
+        public RangeAttackObject AddRangeAttackObject( BaseActor p_target, BaseActor p_attacker, AttackData p_attackdata )
+        {
+            RangeAttackObject attackobj = GameObject.Instantiate<RangeAttackObject>(CloneAttackObject);
+            attackobj.Initlize(p_target, p_attacker, p_attackdata);
+
+            return attackobj;
+        }
+
+
+
         public BaseActor AddPlayerActor( int p_index, E_Camp p_camp = E_Camp.MyCamp )
         {
 

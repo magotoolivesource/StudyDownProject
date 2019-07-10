@@ -20,15 +20,24 @@ namespace Du3Project
             TempActorTableData.ActorTableAllDataList.Clear();
             ActorTableData.GetI.Init();
 
+
+            TempAttackTableData = AttackTableData.GetI;
+            TempAttackTableData.AttackAllTableDataList.Clear();
+            AttackTableData.GetI.Init();
         }
 
 
         public ActorTableData TempActorTableData = new ActorTableData();
-
+        public AttackTableData TempAttackTableData = new AttackTableData();
         private void Awake()
         {
             TempActorTableData = ActorTableData.GetI;
             ActorTableData.GetI.Init();
+
+
+            TempAttackTableData = AttackTableData.GetI;
+            AttackTableData.GetI.Init();
+
 
 
         }

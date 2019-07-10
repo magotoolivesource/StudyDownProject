@@ -20,6 +20,7 @@ namespace Du3Project
     public class ActorData : ScriptableObject
 	{
         public int ID = -1;
+        public List<AttackData> AttackDataList = new List<AttackData>();
         public E_ActorDataName ActorDataNameEnum = E_ActorDataName.Max;
 
         // 액터 이름등 고유값
